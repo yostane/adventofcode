@@ -1,12 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>Diff</key>
-	<array>
-		<dict>
-			<key>ModifiedContent</key>
-			<string>public let puzzleInput = """
+public let puzzleInput = """
 Game 1: 4 blue, 7 red, 5 green; 3 blue, 4 red, 16 green; 3 red, 11 green
 Game 2: 20 blue, 8 red, 1 green; 1 blue, 2 green, 8 red; 9 red, 4 green, 18 blue; 2 green, 7 red, 2 blue; 10 blue, 2 red, 5 green
 Game 3: 2 red, 5 green, 1 blue; 3 blue, 5 green; 8 blue, 13 green, 2 red; 9 green, 3 blue; 12 green, 13 blue; 3 green, 3 blue, 1 red
@@ -108,17 +100,3 @@ Game 98: 9 green; 8 green, 4 blue; 6 blue, 2 red, 1 green; 4 green, 1 blue; 5 bl
 Game 99: 3 red, 1 green, 5 blue; 1 red; 3 blue, 4 red; 3 blue, 1 green, 5 red
 Game 100: 3 red, 3 blue, 10 green; 3 green, 1 blue, 6 red; 5 red, 4 green, 7 blue
 """
-</string>
-			<key>ModifiedRange</key>
-			<string>{0, 10390}</string>
-			<key>OriginalContent</key>
-			<string>// Code inside modules can be shared between pages and other source files.
-</string>
-			<key>OriginalRange</key>
-			<string>{0, 75}</string>
-		</dict>
-	</array>
-	<key>File</key>
-	<string>UserModules/UserModule.playgroundmodule/Sources/SharedCode.swift</string>
-</dict>
-</plist>
