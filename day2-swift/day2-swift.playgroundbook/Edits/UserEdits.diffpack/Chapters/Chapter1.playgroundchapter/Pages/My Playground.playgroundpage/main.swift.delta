@@ -37,12 +37,11 @@ let result = lines.map { line in
     let game = extractInt(from: parts[0])
     let cubeSets = parts[1].split(separator: "; ").map { 
         $0.split(separator: ", ")
-            .map { $0.split(separator: " ") }
-            .reduce(int: [String: Int]()) { result, item in
-                result[item[1]] = extractInt(from: item[0])
-            }
     }
-    print(cubeSets)
+    cubeSets.contains {
+        
+    }
+    print(game, cubeSets)
     
 //    guard cubeCounts["red"] ?? 0 &lt;= 12, cubeCounts["green"] ?? 0 &lt;= 13 , cubeCounts["blue"] ?? 0 &lt;= 14 else {
 //        return 0
@@ -53,7 +52,7 @@ let result = lines.map { line in
 print(result)
 </string>
 			<key>ModifiedRange</key>
-			<string>{1, 1588}</string>
+			<string>{1, 1453}</string>
 			<key>OriginalContent</key>
 			<string></string>
 			<key>OriginalRange</key>
