@@ -1,8 +1,8 @@
 import { puzzleInput } from "./puzzle-input";
 import { sampleInput } from "./sample-input";
 
-// const lines = puzzleInput.split("\n");
-const lines = sampleInput.split("\n");
+const lines = puzzleInput.split("\n");
+// const lines = sampleInput.split("\n");
 
 function hasSymbol(line: String, start: number, end: number): boolean {
   for (let i = Math.max(start, 0); i < Math.min(end, line.length); i++) {
@@ -81,12 +81,13 @@ function findAdjacentNumbersOnLine(
   let endIndex = 0;
   for (
     endIndex = columnIndex + 1;
-    endIndex < line.length && !isNaN(Number(line[startIndex]));
+    endIndex < line.length && !isNaN(Number(line[endIndex]));
     endIndex++
   ) {}
 
   const sub = line.substring(startIndex, endIndex);
-  return sub.split(".").map((item) => Number(item));
+  const split = sub.split(/\.|\*/).filter((s) => s.length > 0);
+  return split.map((item) => Number(item)).filter((n) => !isNaN(n) && n > 0);
 }
 
 function findAdjacentNumbers(
@@ -115,6 +116,7 @@ for (let i = 0; i < lines.length; i++) {
       continue;
     }
     const adjacentNumbers = findAdjacentNumbers(lines, i, j);
+    console.log(adjacentNumbers);
     if (adjacentNumbers.length == 2) {
       const gearRatio = adjacentNumbers.reduce((r, cur) => r * cur, 1);
       gearRatios.push(gearRatio);
