@@ -64,7 +64,7 @@ var locations = GetLocations(seeds);
 
 Console.WriteLine(string.Join(",", seeds));
 Console.WriteLine(string.Join(",", locations));
-Console.WriteLine($"result: {locations.Min()}");
+Console.WriteLine($"result 1: {locations.Min()}");
 
 IEnumerable<long> GetlongRange(long start, long count)
 {
@@ -97,21 +97,23 @@ var part2Seeds = Enumerable.Zip(
 
 RangeMatch GetRangeIntersection2((long, long) a, (long, long) b)
 {
+    long aEnd = a.Item1 + a.Item2;
+    long bEnd = b.Item1 + b.Item2;
     long maxOfStart = Math.Max(a.Item1, b.Item1);
-    long minOfEnd = Math.Min(a.Item1 + a.Item2, b.Item1 + b.Item2);
+    long minOfEnd = Math.Min(aEnd, bEnd);
+    // no intersection if the start is greater than the end
     if (maxOfStart >= minOfEnd)
     {
-        // no match becase the start is greater than the end
-        return new((0, 0), [a]);
+        return new(null, [a]);
     }
     (long, long)[] nonMatches = [];
     if (a.Item1 < maxOfStart)
     {
         nonMatches = [.. nonMatches, (a.Item1, maxOfStart - a.Item1)];
     }
-    if (a.Item2 > minOfEnd)
+    if (aEnd > minOfEnd)
     {
-        nonMatches = [.. nonMatches, (minOfEnd, a.Item2 - minOfEnd)];
+        nonMatches = [.. nonMatches, (minOfEnd, aEnd - minOfEnd)];
     }
     return new((maxOfStart, minOfEnd - maxOfStart), nonMatches);
 }
@@ -127,10 +129,10 @@ RangeMatch GetRangeIntersection2((long, long) a, (long, long) b)
         foreach (var toTestRange in toTestRanges)
         {
             var (match, currentNonMatches) = GetRangeIntersection2(toTestRange, (line[1], line[2]));
-            if (match.Item2 <= 0)
+            if (match is (long, long) m)
             {
-                var startDelta = match.Item1 > line[1] ? toTestRange.Item1 - line[1] : 0;
-                outputRanges = [.. outputRanges, (line[0] + startDelta, match.Item2)];
+                var startDelta = m.Item1 > line[1] ? toTestRange.Item1 - line[1] : 0;
+                outputRanges = [.. outputRanges, (line[0] + startDelta, m.Item2)];
             }
             nonMatchesAfterTesting = currentNonMatches;
         }

@@ -1,6 +1,6 @@
 namespace AdvenOfCode2023
 {
-    record RangeMatch((long, long) Match, (long, long)[] NonMatches);
+    record RangeMatch((long, long)? Match, (long, long)[] NonMatches);
 
     public static class Utils
     {
