@@ -1,6 +1,8 @@
-﻿using AdvenOfCode2023;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using AdvenOfCode2023;
 
-// const string input = InputData.testInput;
+//const string input = InputData.testInput;
 const string input = InputData.input;
 
 string[] parts = input.Split(Environment.NewLine + Environment.NewLine);
@@ -13,7 +15,7 @@ long[][] ConvertStepToMatrix(string step) => step.Split(Environment.NewLine).Sel
         line => line.Split(" ").Select(long.Parse).ToArray()
         ).ToArray();
 
-var steps = stringSteps.Select(ConvertStepToMatrix).ToArray();
+var steps = stringSteps.Select(ConvertStepToMatrix).ToArray() ?? [];
 
 long GetStepOutput(long input, long[][] stepLines) =>
     stepLines.Select(line =>
@@ -28,16 +30,138 @@ long GetStepOutput(long input, long[][] stepLines) =>
         return output;
     }).FirstOrDefault(output => output >= 0, input);
 
-var locations = seeds.Select(seed =>
+Dictionary<long, long> memoizedSeedLocations = [];
+Dictionary<(int, long), long> memoizedStepOutputs = [];
+
+long GetSeedLocation(long seed, long[][][] steps)
 {
-    long output = seed;
-    foreach (var step in steps)
+    if (memoizedSeedLocations.TryGetValue(seed, out long value))
     {
-        output = GetStepOutput(output, step);
+        return value;
     }
+    long output = seed;
+    for (int i = 0; i < steps.Length; i++)
+    {
+        if (memoizedStepOutputs.TryGetValue((i, output), out long stepOutput))
+        {
+            output = stepOutput;
+        }
+        else
+        {
+            var input = GetStepOutput(output, steps[i]);
+            memoizedStepOutputs[(i, output)] = input;
+            output = input;
+        }
+    }
+    memoizedSeedLocations[seed] = output;
     return output;
-});
+}
+
+IEnumerable<long> GetLocations(IEnumerable<long> seeds) => seeds.Select(seed => GetSeedLocation(seed, steps));
+
+
+var locations = GetLocations(seeds);
 
 Console.WriteLine(string.Join(",", seeds));
 Console.WriteLine(string.Join(",", locations));
 Console.WriteLine($"result: {locations.Min()}");
+
+IEnumerable<long> GetlongRange(long start, long count)
+{
+    for (long i = start; i < start + count; i++)
+    {
+        yield return i;
+    }
+}
+
+var part2Seeds = Enumerable.Zip(
+    seeds.Where((item, index) => index % 2 == 0),
+    seeds.Where((item, index) => index % 2 == 1)
+    );
+// get the location of each seend range and flatten
+// var part2PrunedSeeds = part2Seeds.SelectMany(seedRange => GetlongRange(seedRange.First, seedRange.Second)).Distinct().AsParallel().ToList();
+// var part2Locations = GetLocations(part2PrunedSeeds);
+// Console.WriteLine($"result 2: {part2Locations.Min()}");
+
+// long min = long.MaxValue;
+// foreach (var (start, count) in part2Seeds)
+// {
+//     Console.WriteLine($"start {start}, count {count}");
+//     for (long i = start; i < start + count; i++)
+//     {
+//         min = Math.Min(min, GetSeedLocation(i, steps));
+//     }
+//     Console.WriteLine($"Current min {min}");
+// }
+// Console.WriteLine($"result 2: {min}");
+
+RangeMatch GetRangeIntersection2((long, long) a, (long, long) b)
+{
+    long maxOfStart = Math.Max(a.Item1, b.Item1);
+    long minOfEnd = Math.Min(a.Item1 + a.Item2, b.Item1 + b.Item2);
+    if (maxOfStart >= minOfEnd)
+    {
+        // no match becase the start is greater than the end
+        return new((0, 0), [a]);
+    }
+    (long, long)[] nonMatches = [];
+    if (a.Item1 < maxOfStart)
+    {
+        nonMatches = [.. nonMatches, (a.Item1, maxOfStart - a.Item1)];
+    }
+    if (a.Item2 > minOfEnd)
+    {
+        nonMatches = [.. nonMatches, (minOfEnd, a.Item2 - minOfEnd)];
+    }
+    return new((maxOfStart, minOfEnd - maxOfStart), nonMatches);
+}
+
+(long, long)[] GetOutputRanges((long, long) a, long[][] stepLines)
+{
+    (long, long)[] toTestRanges = [a];
+    (long, long)[] outputRanges = [];
+
+    foreach (var line in stepLines)
+    {
+        (long, long)[] nonMatchesAfterTesting = [];
+        foreach (var toTestRange in toTestRanges)
+        {
+            var (match, currentNonMatches) = GetRangeIntersection2(toTestRange, (line[1], line[2]));
+            if (match.Item2 <= 0)
+            {
+                var startDelta = match.Item1 > line[1] ? toTestRange.Item1 - line[1] : 0;
+                outputRanges = [.. outputRanges, (line[0] + startDelta, match.Item2)];
+            }
+            nonMatchesAfterTesting = currentNonMatches;
+        }
+        toTestRanges = [.. nonMatchesAfterTesting];
+    }
+    return [.. outputRanges, .. toTestRanges];
+}
+
+
+(long, long)[] GetOutputRangesOfRanges((long, long)[] inputRanges, long[][] stepLines)
+{
+    (long, long)[] outputs = [];
+    foreach (var inputRange in inputRanges)
+    {
+        outputs = [.. outputs, .. GetOutputRanges(inputRange, stepLines)];
+    }
+    return outputs;
+}
+
+var inputRanges1 = seeds.Select(seed => (seed, 1L)).ToArray();
+foreach (var stepLines in steps)
+{
+    inputRanges1 = GetOutputRangesOfRanges(inputRanges1, stepLines);
+}
+
+Console.WriteLine($"result 1 bis: {inputRanges1.Min(item => item.seed)}");
+
+var inputRanges = part2Seeds.ToArray();
+foreach (var stepLines in steps)
+{
+    inputRanges = GetOutputRangesOfRanges(inputRanges, stepLines);
+}
+
+Console.WriteLine($"result 2: {inputRanges.Min(item => item.First)}");
