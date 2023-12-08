@@ -15,7 +15,13 @@ struct Map{
         let directions = parts[0].map { if $0 == "L" { Direction.Left} else {Direction.Left} }
         let nodes = parts[1].split(separator: "\n").reduce(into: Nodes()) { result, line in
             let splitLine = line.split(separator: " = ")
-            let destinations = splitLine[1].split(separator: ",").map { String($0) }
+            let destinationsParts = splitLine[1]
+            let startIndex = destinationsParts.index(after: destinationsParts.startIndex)
+            let endIndex = destinationsParts.index(destinationsParts.endIndex, offsetBy: -1)
+            let preprocessedDestinations = destinationsParts[startIndex...endIndex]
+            let destinations = preprocessedDestinations
+                .split(separator: ", ")
+                .map { String($0) }
             result[String(splitLine[0])] = (destinations[0], destinations[1])
         }
         return Map(directions: directions, nodes: nodes)
