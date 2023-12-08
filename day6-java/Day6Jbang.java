@@ -1,8 +1,8 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 
-import static java.lang.System.*;
+//DEPS com.google.guava:guava:32.1.3-jre
+
 import java.util.*;
-import java.util.stream.*;
 
 public class Day6Jbang {
 

@@ -4,34 +4,49 @@
 package day7.kotlin
 
 enum class HandType {
-    FIVE_OF_A_KIND,
-    FOUR_OF_A_KIND,
-    FULL_HOUSE,
-    THREE_OF_A_KIND,
-    TWO_PAIR,
+    HIGH_CARD,
     ONE_PAIR,
-    HIGH_CARD
+    TWO_PAIR,
+    THREE_OF_A_KIND,
+    FULL_HOUSE,
+    FOUR_OF_A_KIND,
+    FIVE_OF_A_KIND,
 }
 
-data class Hand(val cards: List<Int>) : Comparable<Hand> {
-    val type: HandType
+data class Hand(val cards: List<Int>, val bid: Int, val joker: Int = 0) : Comparable<Hand> {
+
+    private var _handType: HandType? = null
+    private val type: HandType
         get() {
-            val groups = this.cards.groupBy { it }
-            return when (groups.count()) {
+            val ht = _handType
+            if (ht != null) {
+                return ht
+            }
+            val jokerCount = this.cards.count { it == joker }
+            val groupsToTest = if (jokerCount > 0 && jokerCount < this.cards.size) {
+                val nonJokerGroups = this.cards.filter { it != joker }.groupBy { it }
+                val biggestNonJokerGroup = nonJokerGroups.maxBy { it.value.size }
+                // repeat joker with value of card
+                nonJokerGroups.entries.associate { entry ->
+                    entry.key to
+                            (if (entry.key == biggestNonJokerGroup.key) List(jokerCount + entry.value.size) { entry.key } else entry.value)
+                }
+            } else {
+                this.cards.groupBy { it }
+            }
+            val result = when (groupsToTest.size) {
                 1 -> HandType.FIVE_OF_A_KIND
-                2 ->
-                        if (groups.any { it.value.size == 4 }) HandType.FOUR_OF_A_KIND
-                        else HandType.FULL_HOUSE
-                3 ->
-                        if (groups.any { it.value.size == 3 }) HandType.THREE_OF_A_KIND
-                        else HandType.TWO_PAIR
+                2 -> if (groupsToTest.any { it.value.size == 4 }) HandType.FOUR_OF_A_KIND else HandType.FULL_HOUSE
+                3 -> if (groupsToTest.any { it.value.size == 3 }) HandType.THREE_OF_A_KIND else HandType.TWO_PAIR
                 4 -> HandType.ONE_PAIR
                 else -> HandType.HIGH_CARD
             }
+            _handType = result
+            return result
         }
 
     override fun compareTo(other: Hand): Int {
-        val comparison = compareTo(other)
+        val comparison = this.type.compareTo(other.type)
         return if (comparison != 0) {
             comparison
         } else {
@@ -44,4 +59,38 @@ data class Hand(val cards: List<Int>) : Comparable<Hand> {
     }
 }
 
-fun main() {}
+data class CardGame(val hands: List<Hand>, val useJoker: Boolean = false) {
+    companion object {
+        fun import(input: String, useJoker: Boolean = false): CardGame {
+            val hands = input.split("\n").map {
+                val handAndSplit = it.split(" ")
+                val cards = handAndSplit[0].map { c ->
+                    when (c) {
+                        in '2'..'9' -> c.code - '0'.code
+                        'T' -> 10
+                        'J' -> if (useJoker) 0 else 11
+                        'Q' -> 12
+                        'K' -> 13
+                        'A' -> 14
+                        else -> 0
+                    }
+                }
+                val bid = handAndSplit[1].toInt()
+                Hand(cards, bid)
+            }
+            return CardGame(hands, useJoker)
+        }
+    }
+
+    fun run() =
+        hands.sorted().foldIndexed(0) { index, acc, hand ->
+            acc + hand.bid * (index + 1)
+        }
+}
+
+fun main() {
+    val cardGame = CardGame.import(PUZZLE_INPUT)
+    //println("Part 1: ${cardGame.runPart1()}")
+    val cardGame2 = CardGame.import(PUZZLE_INPUT, true)
+    println("Part 2: ${cardGame2.run()}")
+}
