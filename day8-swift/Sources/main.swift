@@ -77,24 +77,33 @@ struct Map{
         return stepCount
     }
 
-    var primes = [2, 3, 5, 7, 11, 13, 17]
+        // work with any sort of input and output as long as the input is hashable, accept a function that takes Input and returns Output, and send back a function that accepts Input and returns Output
+    func memoize<Input: Hashable, Output>(_ function: @escaping (Input) -> Output) -> (Input) -> Output {
+        // our item cache
+        var storage = [Input: Output]()
+
+        // send back a new closure that does our calculation
+        return { input in
+            if let cached = storage[input] {
+                return cached
+            }
+
+            let result = function(input)
+            storage[input] = result
+            return result
+        }
+    }
+
     func isPrime(_ n: Int) -> Bool {
-        guard !primes.contains(n) else {
-            return true
-        }
-        let isPrime = !(2...(n/2)+1).contains { n.isMultiple(of: $0) } 
-        if isPrime {
-            primes.append(n)
-            return true
-        }
-        return false
+        !(2...(n/2)+1).contains { n.isMultiple(of: $0) }
     }
 
     func getPrimeMultipliers(_ number: Int) -> [Int] {
-        switch(number){
+        let memoizedPrime = memoize(isPrime)
+        return switch(number){
             case 2: [2]
             case 3: [3]
-            default: (2...(number/2)+1).filter { number.isMultiple(of: $0) && isPrime($0) }
+            default: (2...(number/2)+1).filter { number.isMultiple(of: $0) && memoizedPrime($0) }
         }
     }
 
@@ -121,7 +130,7 @@ struct Map{
         // while (!exitSteps.allSatisfy{ result.isMultiple(of: $0)}) {
         //     result += 1
         // }
-        return 0
+        return result
     }
 }
 
