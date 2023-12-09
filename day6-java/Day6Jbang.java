@@ -1,4 +1,5 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
+//SOURCES Input.java
 
 //DEPS com.google.guava:guava:32.1.3-jre
 
