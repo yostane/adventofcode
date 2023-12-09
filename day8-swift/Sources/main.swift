@@ -1,3 +1,5 @@
+import Foundation
+
 enum Direction {
     case Left, Right
 }
@@ -6,8 +8,6 @@ typealias Nodes = [String: (String, String)]
 typealias NodeElement = Dictionary<String, (String, String)>.Element
 
 struct Map{
-    let startNodeName = "AAA"
-    let endNodeName = "ZZZ"
     let directions: [Direction]
     let nodes: Nodes
     
@@ -29,17 +29,25 @@ struct Map{
     }
     
     func runStep1() -> Int {
+        findExit(of: "AAA").1
+    }
+
+    func findExit(of startNodeName: String) -> (String, Int) {
+        let endNodeName = startNodeName.replacing("A", with: "Z").filter {$0 == "Z"}
+        print("finding exit of", startNodeName, ". The exit should end with", endNodeName)
         var stepCount = 0
         var currentNodeName = startNodeName
-        while (currentNodeName != endNodeName){
+        while !currentNodeName.hasSuffix(endNodeName) {
             guard let node = (nodes.first{ $0.key == currentNodeName }) else {
                 print("node not found")
-                return 0
+                return ("", 0)
             }
             currentNodeName = getNextNodeName(of: node, direction: getDirection(forStep: stepCount))
             stepCount += 1
         }
-        return stepCount
+        let result = (currentNodeName, stepCount)
+        print("found exit", result)
+        return result
     }
 
     func getDirection(forStep step: Int) -> Direction {
@@ -50,19 +58,70 @@ struct Map{
         return if direction == .Left {node.value.0} else {node.value.1}
     }
 
-    func runStep2() -> Int {
+    func runStep2Attempt1() -> Int {
         var stepCount = 0
         var currentNodeNames = nodes.filter { $0.key.hasSuffix("A") }.map { $0.key }
-        while (!currentNodeNames.allSatisfy{ $0.hasSuffix("Z") }){
+        while currentNodeNames.count > 0 {
             let direction = getDirection(forStep: stepCount)
             currentNodeNames = currentNodeNames.map { element in
                 let possibilities: (String, String)! = nodes[element]
-                return if direction == .Left {possibilities.0 } else { possibilities.1}
+                let newNodeName = if direction == .Left {possibilities.0 } else { possibilities.1}
+                if newNodeName.hasSuffix("Z"){
+                    print("match", element, newNodeName, stepCount, stepCount % directions.count)
+                }
+                return newNodeName
             }
-            print(currentNodeNames)
+            
             stepCount += 1
         }
         return stepCount
+    }
+
+    var primes = [2, 3, 5, 7, 11, 13, 17]
+    func isPrime(_ n: Int) -> Bool {
+        guard !primes.contains(n) else {
+            return true
+        }
+        let isPrime = !(2...(n/2)+1).contains { n.isMultiple(of: $0) } 
+        if isPrime {
+            primes.append(n)
+            return true
+        }
+        return false
+    }
+
+    func getPrimeMultipliers(_ number: Int) -> [Int] {
+        switch(number){
+            case 2: [2]
+            case 3: [3]
+            default: (2...(number/2)+1).filter { number.isMultiple(of: $0) && isPrime($0) }
+        }
+    }
+
+    func getPrimeMultipliers(_ numbers: [Int]) -> [Int] {
+        Array(Set(numbers.flatMap { getPrimeMultipliers($0) }))
+    }
+
+    func runStep2() -> Int {
+        let currentNodeNames = nodes.filter { $0.key.hasSuffix("A") }.map { $0.key }
+        let exits = currentNodeNames.map { findExit(of: $0) }
+        let exitSteps = exits.map { Int($0.1) }
+        print("exit steps", exitSteps)
+        guard let max = exitSteps.max() else {
+            return 0
+        }
+        let mult = exitSteps.map { Double($0) }.reduce(1.0, *)
+        print("mult", mult, NSDecimalNumber(string: "\(mult)"))
+
+        let primes = getPrimeMultipliers(exitSteps)
+        let result = primes.reduce(1, *)
+
+        // print("findind smallest multiplier. Starting with", max)
+        // var result = max
+        // while (!exitSteps.allSatisfy{ result.isMultiple(of: $0)}) {
+        //     result += 1
+        // }
+        return 0
     }
 }
 
