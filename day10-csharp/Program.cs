@@ -1,6 +1,28 @@
 ﻿using System.Drawing;
 using day10;
 
+Dictionary<(Direction, char), Direction> possibleMoves = new(){
+    {(Direction.Left, '-'), Direction.Left},
+    {(Direction.Right, '-'), Direction.Right},
+    {(Direction.Up, '|'), Direction.Down},
+    {(Direction.Down, '|'), Direction.Up},
+    {(Direction.Left, 'F'), Direction.Down},
+    {(Direction.Up, 'F'), Direction.Right},
+    {(Direction.Right, 'J'), Direction.Up},
+    {(Direction.Down, 'J'), Direction.Left},
+    {(Direction.Down, 'L'), Direction.Right},
+    {(Direction.Left, 'L'), Direction.Up},
+    {(Direction.Up, '7'), Direction.Left},
+    {(Direction.Right, '7'), Direction.Down},
+};
+
+Dictionary<Direction, Point> positionShifts = new(){
+    {Direction.Right, new(1, 0)},
+    {Direction.Left, new(-1, 0)},
+    {Direction.Up, new(0, -1)},
+    {Direction.Down, new(0, 1)},
+};
+
 static Point FindStart(string[] lines)
 {
     for (int i = 0; i < lines.Length; i++)
@@ -17,10 +39,22 @@ static Point FindStart(string[] lines)
     return new();
 }
 
-static int RunStep1(string input)
+char getCharAfterMove(string[] lines, Direction direction, Point startPoint)
+{
+    startPoint.Offset(positionShifts[direction]);
+    return lines[startPoint.X][startPoint.Y];
+}
+
+int RunStep1(string input)
 {
     var lines = input.Split("\n");
     var startPoint = FindStart(lines);
+    var startDirection = Enum.GetValues<Direction>().First(d =>
+    {
+        var c = getCharAfterMove(lines, d, startPoint);
+        return possibleMoves.ContainsKey((d, c));
+    });
+    Point currentPoint = new(startPoint.X, startPoint.Y);
 
 }
 
