@@ -49,13 +49,18 @@ int RunStep1(string input)
 {
     var lines = input.Split("\n");
     var startPoint = FindStart(lines);
-    var startDirection = Enum.GetValues<Direction>().First(d =>
+    var currentDirection = Enum.GetValues<Direction>().Where(d =>
     {
         var c = getCharAfterMove(lines, d, startPoint);
         return possibleMoves.ContainsKey((d, c));
     });
     Point currentPoint = new(startPoint.X, startPoint.Y);
-
+    currentPoint.Offset(positionShifts[currentDirection]);
+    while (lines[currentPoint.X][currentPoint.Y] != "S")
+    {
+        var c = getCharAfterMove(lines, currentDirection, currentPoint);
+        var direction =
+    }
 }
 
 
