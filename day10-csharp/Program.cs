@@ -1,11 +1,12 @@
 ﻿using System.Drawing;
+using System.Text.RegularExpressions;
 using day10;
 
 Dictionary<(Direction, char), Direction> possibleMoves = new(){
     {(Direction.Left, '-'), Direction.Left},
     {(Direction.Right, '-'), Direction.Right},
-    {(Direction.Up, '|'), Direction.Down},
-    {(Direction.Down, '|'), Direction.Up},
+    {(Direction.Up, '|'), Direction.Up},
+    {(Direction.Down, '|'), Direction.Down},
     {(Direction.Left, 'F'), Direction.Down},
     {(Direction.Up, 'F'), Direction.Right},
     {(Direction.Right, 'J'), Direction.Up},
@@ -17,10 +18,10 @@ Dictionary<(Direction, char), Direction> possibleMoves = new(){
 };
 
 Dictionary<Direction, Point> positionShifts = new(){
-    {Direction.Right, new(1, 0)},
-    {Direction.Left, new(-1, 0)},
-    {Direction.Up, new(0, -1)},
-    {Direction.Down, new(0, 1)},
+    {Direction.Right, new(0, 1)},
+    {Direction.Left, new(0, -1)},
+    {Direction.Up, new(-1, 0)},
+    {Direction.Down, new(1, 0)},
 };
 
 static Point FindStart(string[] lines)
@@ -41,30 +42,42 @@ static Point FindStart(string[] lines)
 
 char getCharAfterMove(string[] lines, Direction direction, Point startPoint)
 {
-    startPoint.Offset(positionShifts[direction]);
-    return lines[startPoint.X][startPoint.Y];
+    var p = new Point(startPoint.X, startPoint.Y);
+    p.Offset(positionShifts[direction]);
+    if (p.X < 0 || p.X >= lines.Length || p.Y < 0 || p.Y >= lines[p.X].Length)
+    {
+        return '*';
+    }
+    return lines[p.X][p.Y];
 }
 
 int RunStep1(string input)
 {
     var lines = input.Split("\n");
     var startPoint = FindStart(lines);
-    var currentDirection = Enum.GetValues<Direction>().Where(d =>
+    var currentDirection = Enum.GetValues<Direction>().First(d =>
     {
         var c = getCharAfterMove(lines, d, startPoint);
         return possibleMoves.ContainsKey((d, c));
     });
+    var moves = 1;
     Point currentPoint = new(startPoint.X, startPoint.Y);
     currentPoint.Offset(positionShifts[currentDirection]);
-    while (lines[currentPoint.X][currentPoint.Y] != "S")
+    List<Point> loopPoints = [new Point(currentPoint.X, currentPoint.Y)];
+    while (lines[currentPoint.X][currentPoint.Y] != 'S')
     {
-        var c = getCharAfterMove(lines, currentDirection, currentPoint);
-        var direction =
+        currentDirection = possibleMoves[(currentDirection, lines[currentPoint.X][currentPoint.Y])];
+        currentPoint.Offset(positionShifts[currentDirection]);
+        Console.WriteLine($"Current element {lines[currentPoint.X][currentPoint.Y]} {currentDirection}, {currentPoint}");
+        moves += 1;
+        loopPoints.Add(new Point(currentPoint.X, currentPoint.Y));
     }
+    var preparedLoop = loopPoints.GroupBy(p => p.Y).Select(g => g.OrderBy(p => p.X)).GroupBy(g => g.First().Y);
+    return moves / 2;
 }
 
 
 Console.WriteLine("step 1");
-Console.WriteLine($"test 1. expexted: 4, actual: {runStep1(InputData.TestInput1)}");
-Console.WriteLine($"test 2. expexted: 8, actual: {runStep1(InputData.TestInput2)}");
-Console.WriteLine($"Puzzle Input. Actual: {runStep1(InputData.TestInput1)}");
+Console.WriteLine($"test 1. expexted: 4, actual: {RunStep1(InputData.TestInput1)}");
+Console.WriteLine($"test 2. expexted: 8, actual: {RunStep1(InputData.TestInput2)}");
+Console.WriteLine($"Puzzle Input. Actual: {RunStep1(InputData.PuzzleInput)}");
