@@ -51,7 +51,7 @@ char getCharAfterMove(string[] lines, Direction direction, Point startPoint)
     return lines[p.X][p.Y];
 }
 
-int RunStep1(string input)
+List<Point> getLoopPoints(string input)
 {
     var lines = input.Split("\n");
     var startPoint = FindStart(lines);
@@ -72,8 +72,41 @@ int RunStep1(string input)
         moves += 1;
         loopPoints.Add(new Point(currentPoint.X, currentPoint.Y));
     }
-    var preparedLoop = loopPoints.GroupBy(p => p.Y).Select(g => g.OrderBy(p => p.X)).GroupBy(g => g.First().Y);
-    return moves / 2;
+    return loopPoints;
+}
+
+int RunStep1(string input)
+{
+    return getLoopPoints(input).Count / 2;
+}
+
+int countDotsInLine(string[] lines, IEnumerable<Point> points)
+{
+    var isInsideLoop = true;
+    points = points.Skip(1);
+    var lastPoint = points.Last();
+    for (int i = 0; i < lastPoint.X; i++)
+    {
+        var c = lines[i][lastPoint.Y];
+        if (c == '-' && points.Contains(new(i, lastPoint.Y))) ;
+        {
+            continue;
+        }
+        if (isInsideLoop)
+        {
+
+        }
+    }
+}
+
+int RunStep2(string input, List<Point> loopPoints)
+{
+    var lines = loopPoints.GroupBy(p => p.Y).Select(g => g.OrderBy(p => p.X)).OrderBy(g => g.First().Y);
+    foreach (var linePoints in lines)
+    {
+
+    }
+    return 0;
 }
 
 
