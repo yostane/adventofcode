@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
 using day10;
 
@@ -150,6 +151,75 @@ int RunStep2(string input)
     });
     return loopColumns.Select(columnPoints => countDotsInColmun(lines, columnPoints, res1.Item2)).Sum() + res1.Item1;
 }
+
+TileStatus markTileAndSurrounding(int i, int j, TileStatus[][] tiles, string[] inputMatrix, int minLine, int maxLine, int minColumn, int maxColumn, IEnumerable<Point> loopPoints, Dictionary<Direction, TileStatus> alreadyMarkedDirections)
+{
+    if (tiles[i][j] != TileStatus.Unknown)
+    {
+        return tiles[i][j];
+    }
+    if (i <= minLine || i > maxLine || j <= minColumn || j > maxColumn)
+    {
+        tiles[i][j] = TileStatus.NotEnclosedByLoop;
+        return TileStatus.NotEnclosedByLoop;
+    }
+    tiles[i][j] = TileStatus.Marking;
+    if (tiles[i - 1][j] == TileStatus.NotEnclosedByLoop)
+    {
+        tiles[i][j] = TileStatus.NotEnclosedByLoop;
+        return TileStatus.NotEnclosedByLoop;
+    }
+    if (tiles[i - 1][j] == TileStatus.Loop)
+    {
+        if (inputMatrix[i + minLine - 1][j + minColumn] == 'J')
+        {
+
+        }
+    }
+    if (!alreadyMarkedDirections.ContainsKey(Direction.Up) && tiles[i - 1][j] != TileStatus.Unknown)
+    {
+        markTileAndSurrounding(i - 1, j, tiles, inputMatrix, minLine, maxLine, minColumn, maxColumn, loopPoints, alreadyMarkedDirections);
+    }
+
+    markTileAndSurrounding(i + 1, j, tiles, inputMatrix, minLine, maxLine, minColumn, maxColumn, loopPoints);
+    markTileAndSurrounding(i, j - 1, tiles, inputMatrix, minLine, maxLine, minColumn, maxColumn, loopPoints);
+    markTileAndSurrounding(i, j + 1, tiles, inputMatrix, minLine, maxLine, minColumn, maxColumn, loopPoints);
+}
+
+TileStatus[][] markTiles(int minLine, int maxLine, int minColumn, int maxColumn, IEnumerable<Point> loopPoints)
+{
+    TileStatus[][] tiles = new TileStatus[maxLine - minLine][];
+    for (int i = 0; i < tiles.Length; i++)
+    {
+        tiles[i] = new TileStatus[maxColumn - minColumn];
+        Array.Fill(tiles[i], TileStatus.Unknown);
+        for (int j = 0; j < tiles[i].Length; j++)
+        {
+            if (loopPoints.Contains(new(i + minLine, j + maxColumn)))
+            {
+                tiles[i][j] = TileStatus.Loop;
+            }
+        }
+    }
+    for (int i = 0; i < tiles.Length; i++)
+    {
+        for (int j = 0; j < tiles[i].Length; j++)
+        {
+            if (tiles[i][j] == TileStatus.Unknown)
+            {
+
+            }
+        }
+    }
+    return tiles;
+}
+
+int RunStep2B(string input)
+{
+    var lines = input.Split("\n");
+    var loopPoints = getLoopPoints(lines);
+}
+
 
 
 // Console.WriteLine("step 1");

@@ -4,4 +4,9 @@ namespace day10
     {
         Left, Up, Right, Down
     }
+
+    public enum TileStatus
+    {
+        Unknown, Marking, Loop, EnclosedByLoop, NotEnclosedByLoop
+    }
 }
