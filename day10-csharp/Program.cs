@@ -51,9 +51,8 @@ char getCharAfterMove(string[] lines, Direction direction, Point startPoint)
     return lines[p.X][p.Y];
 }
 
-List<Point> getLoopPoints(string input)
+List<Point> getLoopPoints(string[] lines)
 {
-    var lines = input.Split("\n");
     var startPoint = FindStart(lines);
     var currentDirection = Enum.GetValues<Direction>().First(d =>
     {
@@ -68,7 +67,7 @@ List<Point> getLoopPoints(string input)
     {
         currentDirection = possibleMoves[(currentDirection, lines[currentPoint.X][currentPoint.Y])];
         currentPoint.Offset(positionShifts[currentDirection]);
-        Console.WriteLine($"Current element {lines[currentPoint.X][currentPoint.Y]} {currentDirection}, {currentPoint}");
+        // Console.WriteLine($"Current element {lines[currentPoint.X][currentPoint.Y]} {currentDirection}, {currentPoint}");
         moves += 1;
         loopPoints.Add(new Point(currentPoint.X, currentPoint.Y));
     }
@@ -77,40 +76,91 @@ List<Point> getLoopPoints(string input)
 
 int RunStep1(string input)
 {
-    return getLoopPoints(input).Count / 2;
+    var lines = input.Split("\n");
+    return getLoopPoints(lines).Count / 2;
 }
 
-int countDotsInLine(string[] lines, IEnumerable<Point> points)
+(int, IEnumerable<Point>) countDotsInLine(string line, IEnumerable<Point> points)
 {
-    var isInsideLoop = true;
-    points = points.Skip(1);
+    var isCurrentPointInsideLoop = true;
     var lastPoint = points.Last();
-    for (int i = 0; i < lastPoint.X; i++)
+    var count = 0;
+    List<Point> flaggedPoints = [];
+    for (int col = points.First().Y + 1; col < lastPoint.Y; col++)
     {
-        var c = lines[i][lastPoint.Y];
-        if (c == '-' && points.Contains(new(i, lastPoint.Y))) ;
+        var c = line[col];
+        Point currentPoint = new(points.Last().X, col);
+        var isCurrentPointInPoints = points.Contains(currentPoint);
+        if ((!isCurrentPointInsideLoop && !isCurrentPointInPoints) || (isCurrentPointInsideLoop && new int[] { '-', 'L', 'F' }.Contains(c) && isCurrentPointInPoints))
         {
             continue;
         }
-        if (isInsideLoop)
+        if (isCurrentPointInPoints)
         {
-
+            isCurrentPointInsideLoop = !isCurrentPointInsideLoop;
+        }
+        else if (isCurrentPointInsideLoop)
+        {
+            count += 1;
+            flaggedPoints.Add(currentPoint);
         }
     }
+    return (count, flaggedPoints);
 }
 
-int RunStep2(string input, List<Point> loopPoints)
+int countDotsInColmun(string[] charMatrix, IEnumerable<Point> columnPoints, IEnumerable<Point> taggedPoints)
 {
-    var lines = loopPoints.GroupBy(p => p.Y).Select(g => g.OrderBy(p => p.X)).OrderBy(g => g.First().Y);
-    foreach (var linePoints in lines)
+    var isCurrentPointInsideLoop = true;
+    var lastPoint = columnPoints.Last();
+    var count = 0;
+    for (int i = columnPoints.First().X + 1; i < lastPoint.X; i++)
     {
-
+        var c = charMatrix[i][columnPoints.First().Y];
+        Point currentPoint = new(i, columnPoints.First().Y);
+        var isCurrentPointInPoints = columnPoints.Contains(currentPoint);
+        if ((!isCurrentPointInsideLoop && !isCurrentPointInPoints) || (isCurrentPointInsideLoop && new int[] { '|', 'J', 'L' }.Contains(c) && isCurrentPointInPoints))
+        {
+            continue;
+        }
+        if (isCurrentPointInPoints)
+        {
+            isCurrentPointInsideLoop = !isCurrentPointInsideLoop;
+        }
+        else if (isCurrentPointInsideLoop && !taggedPoints.Contains(currentPoint))
+        {
+            count += 1;
+        }
     }
-    return 0;
+    return count;
 }
 
 
-Console.WriteLine("step 1");
-Console.WriteLine($"test 1. expexted: 4, actual: {RunStep1(InputData.TestInput1)}");
-Console.WriteLine($"test 2. expexted: 8, actual: {RunStep1(InputData.TestInput2)}");
-Console.WriteLine($"Puzzle Input. Actual: {RunStep1(InputData.PuzzleInput)}");
+int RunStep2(string input)
+{
+    var lines = input.Split("\n");
+    var loopPoints = getLoopPoints(lines);
+    var loopLines = loopPoints.GroupBy(p => p.X).Select(g => g.OrderBy(p => p.Y)).OrderBy(g => g.First().X);
+    var loopColumns = loopPoints.GroupBy(p => p.Y).Select(g => g.OrderBy(p => p.X)).OrderBy(g => g.First().Y);
+    var res1 = loopLines.Select(loopLine => countDotsInLine(lines[loopLine.First().X], loopLine))
+    .Aggregate((0, new List<Point>()), (acc, cur) =>
+    {
+        acc.Item1 += cur.Item1;
+        acc.Item2.AddRange(acc.Item2);
+        return acc;
+    });
+    return loopColumns.Select(columnPoints => countDotsInColmun(lines, columnPoints, res1.Item2)).Sum() + res1.Item1;
+}
+
+
+// Console.WriteLine("step 1");
+// Console.WriteLine($"test 1. expexted: 4, actual: {RunStep1(InputData.TestInput1)}");
+// Console.WriteLine($"test 2. expexted: 8, actual: {RunStep1(InputData.TestInput2)}");
+// Console.WriteLine($"Puzzle Input. Actual: {RunStep1(InputData.PuzzleInput)}");
+
+Console.WriteLine("step 2");
+Console.WriteLine($"test 1. expexted: 1, actual: {RunStep2(InputData.TestInput1)}");
+Console.WriteLine($"test 2. expexted: 0, actual: {RunStep2(InputData.TestInput2)}");
+Console.WriteLine($"test 3. expexted: 4, actual: {RunStep2(InputData.TestInput3)}");
+Console.WriteLine($"test 4. expexted: 8, actual: {RunStep2(InputData.TestInput4)}");
+Console.WriteLine($"test 5. expexted: 10, actual: {RunStep2(InputData.TestInput5)}");
+Console.WriteLine($"Puzzle Input. Actual: {RunStep2(InputData.PuzzleInput)}");

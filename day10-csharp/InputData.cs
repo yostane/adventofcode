@@ -6,14 +6,47 @@ namespace day10
 .S-7.
 .|.|.
 .L-J.
-..... ";
+.....";
 
                 public static readonly string TestInput2 = @"..F7.
 .FJ|.
 SJ.L7
 |F--J
-LJ...
-";
+LJ...";
+
+                public static readonly string TestInput3 = @"...........
+.S-------7.
+.|F-----7|.
+.||.....||.
+.||.....||.
+.|L-7.F-J|.
+.|..|.|..|.
+.L--J.L--J.
+...........";
+
+
+                public static readonly string TestInput4 = @".F----7F7F7F7F-7....
+.|F--7||||||||FJ....
+.||.FJ||||||||L7....
+FJL7L7LJLJ||LJ.L-7..
+L--J.L7...LJS7F-7L7.
+....F-J..F7FJ|L7L7L7
+....L7.F7||L7|.L7L7|
+.....|FJLJ|FJ|F7|.LJ
+....FJL-7.||.||||...
+....L---J.LJ.LJLJ...";
+
+
+                public static readonly string TestInput5 = @"FF7FSF7F7F7F7F7F---7
+L|LJ||||||||||||F--J
+FL-7LJLJ||||||LJL-77
+F--JF--7||LJLJ7F7FJ-
+L---JF-JLJ.||-FJLJJ7
+|F|F-JF---7F7-L7L|7|
+|FFJF7L7F-JF7|JL---7
+7-L-JL7||F7|L7F-7F7|
+L.L7LFJ|||||FJL7||LJ
+L7JLJL-JLJLJL--JLJ.L";
 
                 public static readonly string PuzzleInput = @"FL7-|-FJ7.J.FF-.|7.JFF|F--7LJ-F--.--|.FF77LFL..7-F|-F|--L77F7-F7FFF--7---7FFL|7FJ7|J7.FF--F|7-F-7.L|FF|.FF7-J77F7FF7FF|.FF|7F7|-F.FJJFLJJFF-
 F-7.F-JF-7L7-|L-JF7--JLJJFL|.L|.L7|-7--J||.J.FL|FLL|LJL7L|-FL7.|FLJL.J7JJL7J|JL-.FJ.LJJ..||FJF--FF7|-J-FJJJ.|||J7.L|J||-|JL|-J-.LJ-7L-.|FFJJ
