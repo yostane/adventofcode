@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "ts-node src/main.ts",
-    "test": "jest"
+    "test": "jest",
+    "inpsect": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand"
   },
   "keywords": [],
   "author": "",
