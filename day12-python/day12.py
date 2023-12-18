@@ -3,13 +3,40 @@ from day12_utils import memoize
 from typing import List
 
 
-def generate_all_oossibilities(length: int) -> List[str]:
+def generate_all_possibilities(length: int) -> List[str]:
     components = [".", "#"]
     possibilities: [str] = components[:]
     for i in range(length - 1):
-        possibilities = [f"{x}{y}" for x in possibilities for y in components]
+        possibilities = [x + y for x in possibilities for y in components]
     return possibilities
 
+def yield_all_possibilities(length: int) -> List[str]:
+    current_possibility = ["."] * length
+    char_to_append = "."
+    char_to_move = "#"
+    yield "".join(current_possibility)
+    current_possibility[-1] = "#"
+    yield "".join(current_possibility)
+    yielded = 2
+    to_yield = 2 ** length
+    while yielded < to_yield:
+        if current_possibility[0] != char_to_move:
+            current_possibility.append(char_to_append)
+            current_possibility.pop(0)
+        else:
+            move_count = current_possibility.count(char_to_move)
+            if move_count < len(current_possibility):
+                append_count = len(current_possibility) - move_count - 1 
+                current_possibility = [char_to_append] * append_count + [char_to_move] * (move_count + 1)
+            else:
+                char_to_move = "."
+                char_to_append = "#"
+                current_possibility[-1] = char_to_move
+                continue
+        yield "".join(current_possibility)
+        yielded += 1
+
+        
 
 def apply_possibity_to_spring_statuses(
     possibility: str, spring_states: str, question_positions: List[str]
@@ -32,7 +59,7 @@ def get_correct_possibilities(row: str) -> int:
     question_positions = [
         x for x in range(len(springs_statuses)) if springs_statuses[x] == "?"
     ]
-    generate_all_oossibilities_memoized = memoize(generate_all_oossibilities)
+    generate_all_oossibilities_memoized = generate_all_possibilities
     possiblities = generate_all_oossibilities_memoized(len(question_positions))
     correct_possibilities = [
         p
@@ -56,11 +83,11 @@ def run_step_1(input: str) -> int:
 def expand(input: str) -> List[str]:
     lines = input.split("\n")
     splitted_lines = [line.split(" ") for line in lines]
-    expanded_lines = [f"{"?".join(list(l[0]) * 5)} {",".join(list(l[1]) * 5)}" for l in splitted_lines]
+    expanded_lines = [f"{"?".join([l[0]] * 5)} {",".join([l[1]] * 5)}" for l in splitted_lines]
     return expanded_lines
 
 
-def run_step_1(input: str) -> int:
+def run_step_2(input: str) -> int:
     expanded_lines = expand(input)
     counts = [len(get_correct_possibilities(x)) for x in expanded_lines]
     return sum(counts)

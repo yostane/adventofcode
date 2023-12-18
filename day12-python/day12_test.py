@@ -2,10 +2,12 @@ import unittest
 import re
 from day12 import (
     is_row_correct,
-    generate_all_oossibilities,
+    generate_all_possibilities,
     get_correct_possibilities,
     run_step_1,
     expand,
+    run_step_2,
+    yield_all_possibilities,
 )
 from input_data import test_input_1_possibilities, test_input_1
 
@@ -21,7 +23,7 @@ class Testing(unittest.TestCase):
 
     def test_generate_all_possibilities(self):
         expected = ["...", "..#", ".##", "###", "#..", "##.", "#.#", ".#."]
-        self.assertCountEqual(generate_all_oossibilities(3), expected)
+        self.assertCountEqual(generate_all_possibilities(3), expected)
         pass
 
     def test_get_correcet_possibilities_cout(self):
@@ -33,6 +35,18 @@ class Testing(unittest.TestCase):
 
     def test_expand_1(self):
         self.assertEqual(expand(".# 1"), [".#?.#?.#?.#?.# 1,1,1,1,1"])
+
+    def test_step_2(self):
+        self.assertEqual(run_step_2(test_input_1), 525152)
+
+    def test_yield_all_possibilities_1(self):
+        expected = ["...", "..#", ".##", "###", "#..", "##.", "#.#", ".#."]
+        self.assertCountEqual(yield_all_possibilities(3), expected)
+        pass
+
+    def test_yield_all_possibilities_2(self):
+        self.assertCountEqual(yield_all_possibilities(4), generate_all_possibilities(4))
+        pass
 
 
 if __name__ == "__main__":
