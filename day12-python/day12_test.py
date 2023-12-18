@@ -1,6 +1,13 @@
 import unittest
 import re
-from day12 import is_row_correct
+from day12 import (
+    is_row_correct,
+    generate_all_oossibilities,
+    get_correct_possibilities,
+    run_step_1,
+    expand,
+)
+from input_data import test_input_1_possibilities, test_input_1
 
 
 class Testing(unittest.TestCase):
@@ -11,6 +18,21 @@ class Testing(unittest.TestCase):
     def test_is_row_correct(self):
         self.assertEqual(is_row_correct("#...###.###", [1, 3, 3]), True)
         pass
+
+    def test_generate_all_possibilities(self):
+        expected = ["...", "..#", ".##", "###", "#..", "##.", "#.#", ".#."]
+        self.assertCountEqual(generate_all_oossibilities(3), expected)
+        pass
+
+    def test_get_correcet_possibilities_cout(self):
+        for input, count in test_input_1_possibilities.items():
+            self.assertEqual(len(get_correct_possibilities(input)), count)
+
+    def test_step_1(self):
+        self.assertEqual(run_step_1(test_input_1), 21)
+
+    def test_expand_1(self):
+        self.assertEqual(expand(".# 1"), [".#?.#?.#?.#?.# 1,1,1,1,1"])
 
 
 if __name__ == "__main__":
