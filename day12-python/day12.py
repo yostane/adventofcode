@@ -10,6 +10,15 @@ def generate_all_possibilities(length: int) -> List[str]:
         possibilities = [x + y for x in possibilities for y in components]
     return possibilities
 
+def yield_all_possibilities_recursive(length: int) -> List[str]:
+    if length == 0:
+        yield []
+    elif length == 1:
+        yield ['*', "#"]
+    else:
+        for i in yield_all_possibilities_recursive(length - 1):
+            yield [i + "*", i + "#"]
+
 def yield_all_possibilities(length: int) -> List[str]:
     current_possibility = ["."] * length
     char_to_append = "."
