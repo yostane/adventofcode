@@ -3,10 +3,11 @@ import re
 from day12 import (
     is_row_correct,
     generate_all_possibilities,
-    get_correct_possibilities,
+    get_correct_possibilities_of_row,
     run_step_1,
     expand,
     run_step_2,
+    run_step_2_test0,
     yield_all_possibilities_recursive,
 )
 from input_data import test_input_1_possibilities, test_input_1
@@ -28,7 +29,7 @@ class Testing(unittest.TestCase):
 
     def test_get_correcet_possibilities_cout(self):
         for input, count in test_input_1_possibilities.items():
-            self.assertEqual(len(get_correct_possibilities(input)), count)
+            self.assertEqual(len(get_correct_possibilities_of_row(input)), count)
 
     def test_step_1(self):
         self.assertEqual(run_step_1(test_input_1), 21)
@@ -38,6 +39,11 @@ class Testing(unittest.TestCase):
 
     def test_step_2(self):
         self.assertEqual(run_step_2(test_input_1), 525152)
+
+    def test_step_2_0(self):
+        self.assertEqual(run_step_2_test0("???.### 1,1,3"), 1)
+        self.assertEqual(run_step_2_test0(".??..??...?##. 1,1,3"), 16384)
+        self.assertEqual(run_step_2_test0(test_input_1), 525152)
 
     def test_yield_all_possibilities_1(self):
         expected = ["...", "..#", ".##", "###", "#..", "##.", "#.#", ".#."]

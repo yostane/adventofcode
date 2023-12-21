@@ -65,8 +65,36 @@ def is_row_correct(spring_statuses: str, damage_records: List[int]) -> bool:
     return damages_springs_counts == damage_records
 
 
-def get_correct_possibilities(row: str) -> int:
-    [springs_statuses, damage_records_string] = row.split(" ")
+def get_correct_possibilities_of_row(row: str) -> int:
+    return get_correct_possibilities(row.split(" "))
+
+
+def get_correct_possibilities_of_expanded_row(row: str) -> int:
+    data = row.split(" ")
+    possibilities = get_correct_possibilities(data)
+
+    items = [
+        get_correct_possibilities(expanded)
+        for x in possibilities
+        if (expanded := ((x + "?") * 4 + x, (data[1] + ",") * 4 + data[1]))
+    ]
+    return [x for row in items for x in row]
+
+
+def get_correct_possibilities_of_expanded_row_0(row: str) -> int:
+    data = row.split(" ")
+    left_possibilities = get_correct_possibilities([data[0] + "?", data[1]])
+    right_possibilities = get_correct_possibilities(["?" + data[0], data[1]])
+    return (
+        left_possibilities
+        if len(left_possibilities) > len(right_possibilities)
+        else right_possibilities,
+        get_correct_possibilities(data),
+    )
+
+
+def get_correct_possibilities(status_damage_pair: List[str]) -> int:
+    [springs_statuses, damage_records_string] = status_damage_pair
     damage_records = [int(x) for x in damage_records_string.split(",")]
     question_positions = [
         x for x in range(len(springs_statuses)) if springs_statuses[x] == "?"
@@ -88,7 +116,7 @@ def get_correct_possibilities(row: str) -> int:
 
 def run_step_1(input: str) -> int:
     lines = input.split("\n")
-    counts = [len(get_correct_possibilities(x)) for x in lines]
+    counts = [len(get_correct_possibilities_of_row(x)) for x in lines]
     return sum(counts)
 
 
@@ -101,7 +129,19 @@ def expand(input: str) -> List[str]:
     return expanded_lines
 
 
+def run_step_2_test0(input: str) -> int:
+    lines = input.split("\n")
+    counts = [
+        (len(p[0]) ** 4) * len(p[1])
+        for x in lines
+        if (p := get_correct_possibilities_of_expanded_row_0(x))
+    ]
+    return sum(counts)
+
+
 def run_step_2(input: str) -> int:
-    expanded_lines = expand(input)
-    counts = [len(get_correct_possibilities(x)) for x in expanded_lines]
+    lines = input.split("\n")
+    counts = [
+        len(p) for x in lines if (p := get_correct_possibilities_of_expanded_row(x))
+    ]
     return sum(counts)
