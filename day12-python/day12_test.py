@@ -7,7 +7,6 @@ from day12 import (
     run_step_1,
     expand,
     run_step_2,
-    run_step_2_test0,
     yield_all_possibilities_recursive,
 )
 from input_data import test_input_1_possibilities, test_input_1
@@ -38,12 +37,9 @@ class Testing(unittest.TestCase):
         self.assertEqual(expand(".# 1"), [".#?.#?.#?.#?.# 1,1,1,1,1"])
 
     def test_step_2(self):
+        self.assertEqual(run_step_2("???.### 1,1,3"), 1)
+        self.assertEqual(run_step_2(".??..??...?##. 1,1,3"), 16384)
         self.assertEqual(run_step_2(test_input_1), 525152)
-
-    def test_step_2_0(self):
-        self.assertEqual(run_step_2_test0("???.### 1,1,3"), 1)
-        self.assertEqual(run_step_2_test0(".??..??...?##. 1,1,3"), 16384)
-        self.assertEqual(run_step_2_test0(test_input_1), 525152)
 
     def test_yield_all_possibilities_1(self):
         expected = ["...", "..#", ".##", "###", "#..", "##.", "#.#", ".#."]
