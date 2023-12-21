@@ -7,7 +7,7 @@ from day12 import (
     run_step_1,
     expand,
     run_step_2,
-    yield_all_possibilities,
+    yield_all_possibilities_recursive,
 )
 from input_data import test_input_1_possibilities, test_input_1
 
@@ -41,12 +41,12 @@ class Testing(unittest.TestCase):
 
     def test_yield_all_possibilities_1(self):
         expected = ["...", "..#", ".##", "###", "#..", "##.", "#.#", ".#."]
-        self.assertCountEqual(yield_all_possibilities(3), expected)
-        pass
+        self.assertCountEqual(yield_all_possibilities_recursive(3), expected)
 
     def test_yield_all_possibilities_2(self):
-        self.assertCountEqual(yield_all_possibilities(4), generate_all_possibilities(4))
-        pass
+        self.assertCountEqual(
+            yield_all_possibilities_recursive(4), generate_all_possibilities(4)
+        )
 
 
 if __name__ == "__main__":

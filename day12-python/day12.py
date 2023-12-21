@@ -10,14 +10,16 @@ def generate_all_possibilities(length: int) -> List[str]:
         possibilities = [x + y for x in possibilities for y in components]
     return possibilities
 
+
 def yield_all_possibilities_recursive(length: int) -> List[str]:
-    if length == 0:
-        yield []
-    elif length == 1:
-        yield ['*', "#"]
+    if length == 1:
+        yield "."
+        yield "#"
     else:
         for i in yield_all_possibilities_recursive(length - 1):
-            yield [i + "*", i + "#"]
+            yield i + "."
+            yield i + "#"
+
 
 def yield_all_possibilities(length: int) -> List[str]:
     current_possibility = ["."] * length
@@ -27,7 +29,7 @@ def yield_all_possibilities(length: int) -> List[str]:
     current_possibility[-1] = "#"
     yield "".join(current_possibility)
     yielded = 2
-    to_yield = 2 ** length
+    to_yield = 2**length
     while yielded < to_yield:
         if current_possibility[0] != char_to_move:
             current_possibility.append(char_to_append)
@@ -35,8 +37,10 @@ def yield_all_possibilities(length: int) -> List[str]:
         else:
             move_count = current_possibility.count(char_to_move)
             if move_count < len(current_possibility):
-                append_count = len(current_possibility) - move_count - 1 
-                current_possibility = [char_to_append] * append_count + [char_to_move] * (move_count + 1)
+                append_count = len(current_possibility) - move_count - 1
+                current_possibility = [char_to_append] * append_count + [
+                    char_to_move
+                ] * (move_count + 1)
             else:
                 char_to_move = "."
                 char_to_append = "#"
@@ -45,7 +49,6 @@ def yield_all_possibilities(length: int) -> List[str]:
         yield "".join(current_possibility)
         yielded += 1
 
-        
 
 def apply_possibity_to_spring_statuses(
     possibility: str, spring_states: str, question_positions: List[str]
@@ -68,8 +71,8 @@ def get_correct_possibilities(row: str) -> int:
     question_positions = [
         x for x in range(len(springs_statuses)) if springs_statuses[x] == "?"
     ]
-    generate_all_oossibilities_memoized = generate_all_possibilities
-    possiblities = generate_all_oossibilities_memoized(len(question_positions))
+    generate_func = yield_all_possibilities_recursive
+    possiblities = generate_func(len(question_positions))
     correct_possibilities = [
         p
         for x in possiblities
@@ -92,7 +95,9 @@ def run_step_1(input: str) -> int:
 def expand(input: str) -> List[str]:
     lines = input.split("\n")
     splitted_lines = [line.split(" ") for line in lines]
-    expanded_lines = [f"{"?".join([l[0]] * 5)} {",".join([l[1]] * 5)}" for l in splitted_lines]
+    expanded_lines = [
+        f"{'?'.join([l[0]] * 5)} {','.join([l[1]] * 5)}" for l in splitted_lines
+    ]
     return expanded_lines
 
 
