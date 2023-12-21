@@ -83,10 +83,7 @@ def get_correct_possibilities_of_expanded_row(row: str) -> int:
             possiblity, springs_statuses, question_positions
         )
         if is_row_correct(result, damage_records):
-            if result[-1] == "." and result[0] == ".":
-                correct_possibilities[1].append(result)
-            else:
-                correct_possibilities[2].append(result)
+            
         else:
             expanded_left = (springs_statuses + "?") * 4 + springs_statuses
             expanded_right = (damage_records_string + ",") * 4 + damage_records_string
