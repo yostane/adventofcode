@@ -20,6 +20,7 @@ def yield_all_possibilities_recursive(length: int) -> List[str]:
             yield i + "."
             yield i + "#"
 
+
 def apply_possibity_to_spring_statuses(
     possibility: str, spring_states: str, question_positions: List[str]
 ) -> str:
@@ -39,30 +40,31 @@ def get_correct_possibilities_of_row(row: str) -> int:
     return get_correct_possibilities(row.split(" "))
 
 
-def get_correct_possibilities_of_expanded_row(row: str) -> int:
-
+def get_correct_possibilities_of_expanded_row(row: str) -> (List[str], List[str]):
     [springs_statuses, damage_records_string] = row.split(" ")
-    damage_records = [int(x) for x in damage_records_string.split(",")]
-    question_positions = [
-        x for x in range(len(springs_statuses)) if springs_statuses[x] == "?"
+    correct_possibilities_right = get_correct_possibilities(
+        (f"{springs_statuses}?", damage_records_string)
+    )
+    # correct_possibilities_right = [
+    #     x for x in correct_possibilities_right if x[0] == "." or x[-1] == "."
+    # ]
+    correct_possibilities_left = get_correct_possibilities(
+        (f"?{springs_statuses}", damage_records_string)
+    )
+    correct_possibilities_left = [
+        x for x in correct_possibilities_left if x[0] == "." or x[-1] == "."
     ]
-    generate_func = yield_all_possibilities_recursive
-    correct_possibilities = ([], [], [])
-    for possiblity in generate_func(len(question_positions)):
-        result = apply_possibity_to_spring_statuses(
-            possiblity, springs_statuses, question_positions
-        )
-        if is_row_correct(result, damage_records):
-            
-        else:
-            expanded_left = (springs_statuses + "?") * 4 + springs_statuses
-            expanded_right = (damage_records_string + ",") * 4 + damage_records_string
-            expanded_possibilities = get_correct_possibilities(
-                (expanded_left, expanded_right)
-            )
-            correct_possibilities[0].extend(expanded_possibilities)
 
-    return correct_possibilities
+    correct_possibilities = get_correct_possibilities(
+        [springs_statuses, damage_records_string]
+    )
+
+    return (
+        correct_possibilities_left
+        if len(correct_possibilities_left) > len(correct_possibilities_right)
+        else correct_possibilities_right,
+        correct_possibilities,
+    )
 
 
 def get_correct_possibilities(status_damage_pair: List[str]) -> List[str]:
@@ -104,7 +106,7 @@ def expand(input: str) -> List[str]:
 def run_step_2(input: str) -> int:
     lines = input.split("\n")
     counts = [
-        len(p[0]) ** 5 + len(p[1])
+        (len(p[0]) ** 4) * len(p[1])
         for x in lines
         if (p := get_correct_possibilities_of_expanded_row(x))
     ]

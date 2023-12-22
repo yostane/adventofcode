@@ -1,14 +1,6 @@
 import unittest
 import re
-from day12 import (
-    is_row_correct,
-    generate_all_possibilities,
-    get_correct_possibilities_of_row,
-    run_step_1,
-    expand,
-    run_step_2,
-    yield_all_possibilities_recursive,
-)
+from day12 import *
 from input_data import test_input_1_possibilities, test_input_1
 
 
@@ -37,15 +29,23 @@ class Testing(unittest.TestCase):
         self.assertEqual(expand(".# 1"), [".#?.#?.#?.#?.# 1,1,1,1,1"])
 
     def test_step_2(self):
-        actuals = []
         for input, _ in test_input_1_possibilities.items():
             result = run_step_2(input)
-            print(input, "expanded possibilities ->", result)
-            actuals.append(run_step_2(result))
+            print(input, "step 2 ->", result)
 
         for input, counts in test_input_1_possibilities.items():
             result = run_step_2(input)
-            self.assertEqual(result, counts[1])
+            self.assertEqual(result, counts[1], input)
+
+    def test_expanded_possibilities(self):
+        for input, _ in test_input_1_possibilities.items():
+            result = get_correct_possibilities_of_expanded_row(input)
+            print(input, "expanded possibilities ->", [len(x) for x in result])
+
+        for input, counts in test_input_1_possibilities.items():
+            result = get_correct_possibilities_of_expanded_row(input)
+            actuals = [len(x) for x in result]
+            self.assertEqual((actuals[0] ** 4) * actuals[1], counts[1], input)
 
     def test_yield_all_possibilities_1(self):
         expected = ["...", "..#", ".##", "###", "#..", "##.", "#.#", ".#."]
