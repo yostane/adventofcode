@@ -4,11 +4,26 @@
 package day13
 
 import day13.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
 import kotlin.test.Test
 
 class AppTest {
     @Test
     fun appHasAGreeting() {
         val testApp = App(testInput)
+    }
+
+    @ParameterizedTest
+    @MethodSource("getPatterns")
+    fun canCountReflections(patternString: Map.Entry<String, Int>) {
+
+
+    }
+
+    companion object {
+        @JvmStatic
+        fun getPatterns() = testPatterns.entries
     }
 }
