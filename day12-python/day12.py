@@ -20,36 +20,6 @@ def yield_all_possibilities_recursive(length: int) -> List[str]:
             yield i + "."
             yield i + "#"
 
-
-def yield_all_possibilities(length: int) -> List[str]:
-    current_possibility = ["."] * length
-    char_to_append = "."
-    char_to_move = "#"
-    yield "".join(current_possibility)
-    current_possibility[-1] = "#"
-    yield "".join(current_possibility)
-    yielded = 2
-    to_yield = 2**length
-    while yielded < to_yield:
-        if current_possibility[0] != char_to_move:
-            current_possibility.append(char_to_append)
-            current_possibility.pop(0)
-        else:
-            move_count = current_possibility.count(char_to_move)
-            if move_count < len(current_possibility):
-                append_count = len(current_possibility) - move_count - 1
-                current_possibility = [char_to_append] * append_count + [
-                    char_to_move
-                ] * (move_count + 1)
-            else:
-                char_to_move = "."
-                char_to_append = "#"
-                current_possibility[-1] = char_to_move
-                continue
-        yield "".join(current_possibility)
-        yielded += 1
-
-
 def apply_possibity_to_spring_statuses(
     possibility: str, spring_states: str, question_positions: List[str]
 ) -> str:
@@ -70,7 +40,7 @@ def get_correct_possibilities_of_row(row: str) -> int:
 
 
 def get_correct_possibilities_of_expanded_row(row: str) -> int:
-    """get all possibilities, for all failed ones, expand and try again for all expanded possibilities"""
+
     [springs_statuses, damage_records_string] = row.split(" ")
     damage_records = [int(x) for x in damage_records_string.split(",")]
     question_positions = [
