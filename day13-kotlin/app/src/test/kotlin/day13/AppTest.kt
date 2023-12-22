@@ -4,26 +4,28 @@
 package day13
 
 import day13.*
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
-import org.junit.jupiter.params.provider.MethodSource
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 
 class AppTest {
+
     @Test
-    fun appHasAGreeting() {
+    fun appRunStep1() {
         val testApp = App(testInput)
+        assertEquals(405, testApp.runStep1())
     }
 
     @ParameterizedTest
     @MethodSource("getPatterns")
     fun canCountReflections(patternString: Map.Entry<String, Int>) {
-
-
+        val pattern = Pattern(patternString.key.split("\n"))
+        val actual = pattern.getPerfectReflexionCount()
+        assertEquals(patternString.value, actual)
     }
 
     companion object {
-        @JvmStatic
-        fun getPatterns() = testPatterns.entries
+        @JvmStatic fun getPatterns() = testPatterns.entries
     }
 }
