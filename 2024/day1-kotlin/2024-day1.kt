@@ -31,6 +31,8 @@ fun run(input: String) {
 }
 
 fun main() {
+    println("Sample input")
     run(testInput)
+    println("Puzzle input")
     run(input)
 }

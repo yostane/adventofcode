@@ -8,5 +8,4 @@ Some Kotlin and Java solutions can be run with JBnag.
 
 ```sh
 jbang 2024-1@yostane/adventofcode
-
 ```
