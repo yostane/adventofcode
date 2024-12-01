@@ -1,0 +1,10 @@
+{
+  "catalogs": {},
+  "aliases": {
+    "2024-1": {
+      "script-ref": "2024/day1-kotlin/2024-day1.kt",
+      "description": "Advent of code 2024 day  in Kotlin"
+    }
+  },
+  "templates": {}
+}

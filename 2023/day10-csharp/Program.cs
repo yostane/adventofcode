@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Reflection.PortableExecutable;
 using System.Text.RegularExpressions;
 using day10;
@@ -171,7 +171,7 @@ TileStatus markTileAndSurrounding(int i, int j, TileStatus[][] tiles, string[] i
     }
     if (tiles[i - 1][j] == TileStatus.Loop)
     {
-        if (inputMatrix[i + minLine - 1][j + minColumn] == 'J')
+        if (inputMatrix[i + minLine - 1][j + minColumn] == 'J' && inputMatrix[i + minLine - 1][j + minColumn] == 'J')
         {
 
         }
