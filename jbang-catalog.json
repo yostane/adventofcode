@@ -4,7 +4,34 @@
     "2024-1": {
       "script-ref": "2024/day1-kotlin/2024-day1.kt",
       "description": "Advent of code 2024 day  in Kotlin"
+    },
+    "2024-2": {
+      "script-ref": "2024/day1-kotlin/2024-day2.kt",
+      "description": "Advent of code 2024 day  in Kotlin"
+    },
+    "2024-3": {
+      "script-ref": "2024/day1-kotlin/2024-day3.kt",
+      "description": "Advent of code 2024 day  in Kotlin"
+    },
+    "2024-4": {
+      "script-ref": "2024/day1-kotlin/2024-day4.kt",
+      "description": "Advent of code 2024 day  in Kotlin"
     }
   },
-  "templates": {}
+  "templates": {
+    "kt": {
+      "file-refs": {
+        "{basename}.kt": "2024/templates/kotlin/2024-dayx.kt",
+        "input.kt": "2024/templates/kotlin/input.kt"
+      },
+      "description": "Kotlin Template"
+    },
+    "kt2024": {
+      "file-refs": {
+        "{basename}.kt": "2024/templates/kotlin/2024-dayx.kt",
+        "input.kt": "2024/templates/kotlin/input.kt"
+      },
+      "description": "Template in Kotlin for 2024"
+    }
+  }
 }
