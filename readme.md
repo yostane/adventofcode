@@ -5,7 +5,7 @@
 Some Kotlin and Java solutions can be run with JBnag.
 
 - 2024
-    - Run a solution
+    - Run a solution (2024-1 means day 1 of advent 2024)
     ```sh
     jbang 2024-1@yostane/adventofcode
     ```
