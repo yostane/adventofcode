@@ -28,13 +28,13 @@ fun moveGuardOut(map: MutableList<MutableList<Char>>): Boolean {
         mutableMapOf(originalPosition to mutableSetOf(originalGuard))
     while (true) {
         require(guardPosition != null)
-//        if (guardPosition == 17 to 37) {
-//            val tmp = map[guardPosition.first][guardPosition.second]
-//            map[guardPosition.first][guardPosition.second] = '%'
-//            println(map.joinToString("\n") { it.joinToString("") })
-//            map[guardPosition.first][guardPosition.second] = tmp
-//        }
-//        println("$guardPosition")
+
+//        println(guardPosition)
+//        val tmp = map[guardPosition.first][guardPosition.second]
+//        map[guardPosition.first][guardPosition.second] = '%'
+//        println(map.joinToString("\n") { it.joinToString("") })
+//        map[guardPosition.first][guardPosition.second] = tmp
+
         val guard = map[guardPosition.first][guardPosition.second]
         val delta = guardPositions[guard]
         require(delta != null)
@@ -47,10 +47,10 @@ fun moveGuardOut(map: MutableList<MutableList<Char>>): Boolean {
             val currentPositionIndex = orderedOrientations.indexOf(guard)
             val nextOrientation = orderedOrientations[(currentPositionIndex + 1) % orderedOrientations.size]
             map[guardPosition.first][guardPosition.second] = nextOrientation
-        } else if (markedOrientations.getOrDefault(nextPosition, mutableSetOf()).contains(guard) != false) {
+        } else if (markedOrientations.getOrDefault(nextPosition, mutableSetOf()).contains(guard)) {
             return true
         } else {
-            markedOrientations.getOrDefault(nextPosition, mutableSetOf()).add(guard)
+            markedOrientations.getOrPut(nextPosition) { mutableSetOf(guard) }
             map[nextPosition.first][nextPosition.second] = guard
             guardPosition = nextPosition
         }
