@@ -1,6 +1,7 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 
-//SOURCES input.kt
+//KOTLIN 2.1.0
+//SOURCES {basename}-input.kt
 
 fun run(input: String) {
     val part1Result = 0
