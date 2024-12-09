@@ -17,11 +17,11 @@ fun compactDiskWhole(diskMap: List<Int>): List<Int> {
     while (rIndex >= 0) {
         val firstRIndex = compactedDisk.indexOfFirst { it == compactedDisk[rIndex] }
         val count = rIndex - firstRIndex + 1
-        for (i in 0..(diskMap.lastIndex - count)) {
+        for (i in 0..(firstRIndex - count)) {
             val subList = compactedDisk.subList(i, i + count)
             if (subList.all { it == -1 }) {
                 compactedDisk.subList(i, i + count).fill(diskMap[rIndex])
-                compactedDisk.subList(firstRIndex, rIndex).fill(-1)
+                compactedDisk.subList(firstRIndex, rIndex + 1).fill(-1)
                 break
             }
         }
@@ -56,15 +56,17 @@ fun run(input: String) {
 //    println(diskMap.joinToString(","))
     val compactedDiskMap = compactDisk(diskMap)
 //    println("Compacted Disk")
-    println(compactedDiskMap.joinToString(","))
+//    println(compactedDiskMap.joinToString(","))
     val part1Result =
         compactedDiskMap.mapIndexed { index, ch -> index.toBigInteger() * ch.toBigInteger() }.sumOf { it }
     println("part1 $part1Result")
 
     val compactedWhole = compactDiskWhole(diskMap)
-    println("Compacted Whole files")
-    println(compactedWhole.joinToString(","))
-    val part2Result = compactedWhole.mapIndexed { index, ch -> index.toBigInteger() * ch.toBigInteger() }.sumOf { it }
+//    println("Compacted Whole files")
+//    println(compactedWhole.joinToString(","))
+    val part2Result =
+        compactedWhole.mapIndexed { index, ch -> if (ch > 0) index.toBigInteger() * ch.toBigInteger() else 0.toBigInteger() }
+            .sumOf { it }
     println("part2 $part2Result")
 }
 
@@ -74,6 +76,6 @@ fun main() {
         println("Sample input $i")
         run(input)
     }
-//    println("Puzzle input")
-//    run(input)
+    println("Puzzle input")
+    run(input)
 }
