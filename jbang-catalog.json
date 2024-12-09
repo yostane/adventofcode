@@ -21,7 +21,7 @@
   "templates": {
     "kt": {
       "file-refs": {
-        "{basename}.kt": "2024/templates/kotlin/2024-dayx.kt",
+        "{basename}.kt": "2024/templates/kotlin/2024-dayx.qute",
         "{basename}-input.kt": "2024/templates/kotlin/input.kt"
       },
       "description": "Kotlin Template"
