@@ -22,13 +22,13 @@ fun compactDiskWhole(diskMap: List<Int>): List<Int> {
             if (subList.all { it == -1 }) {
                 compactedDisk.subList(i, i + count).fill(diskMap[rIndex])
                 compactedDisk.subList(firstRIndex, rIndex).fill(-1)
-                rIndex = firstRIndex
-                do {
-                    rIndex -= 1
-                } while (rIndex >= 0 && compactedDisk[rIndex] == -1)
                 break
             }
         }
+        rIndex = firstRIndex
+        do {
+            rIndex -= 1
+        } while (rIndex >= 0 && compactedDisk[rIndex] == -1)
     }
     return compactedDisk
 }
