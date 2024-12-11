@@ -35,17 +35,21 @@ fun countStonesRecursive(stone: String, currentBlinkCount: Int, maxBlinkCount: I
     }
 }
 
-fun countStonesRecursiveOptimized(stone: String, currentBlinkCount: Int, maxBlinkCount: Int): Int {
+typealias BlinkCache = MutableMap<String, MutableList<MutableList<String>>>
+
+//TODO: cache results in a Map<String or Long (the stone), List<List<String or Long>>> each index represent the result after index blinks
+fun countStonesCached(stone: String, currentBlinkCount: Int, maxBlinkCount: Int, cache: BlinkCache): Int {
     if (currentBlinkCount == maxBlinkCount) {
         return 1
     }
     return when {
-        stone == "0" -> countStonesRecursive("1", currentBlinkCount + 1, maxBlinkCount)
+        stone == "0" -> countStonesCached("1", currentBlinkCount + 1, maxBlinkCount, cache)
         stone.length % 2 == 0 -> {
             val p1 = stone.substring(0, stone.length / 2).toLong().toString()
-            val h1 = countStonesRecursive(p1, currentBlinkCount + 1, maxBlinkCount)
+            val h1 = countStonesCached(p1, currentBlinkCount + 1, maxBlinkCount, cache)
             val p2 = stone.substring(stone.length / 2).toLong().toString()
-            val h2 = countStonesRecursive(p2, currentBlinkCount + 1, maxBlinkCount)
+            val h2 = countStonesCached(p2, currentBlinkCount + 1, maxBlinkCount, cache)
+            cache.getOrPut(stone) { mutableListOf(mutableListOf()) }.add(mutableListOf(p1, p2))
             h1 + h2
         }
 
