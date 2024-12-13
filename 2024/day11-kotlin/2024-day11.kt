@@ -1,3 +1,5 @@
+import kotlin.math.min
+
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 
 //KOTLIN 2.1.0
@@ -39,6 +41,14 @@ typealias BlinkCache = MutableMap<String, MutableList<MutableList<String>>>
 
 //TODO: cache results in a Map<String or Long (the stone), List<List<String or Long>>> each index represent the result after index blinks
 fun countStonesCached(stone: String, currentBlinkCount: Int, maxBlinkCount: Int, cache: BlinkCache): Int {
+    val cachedStoneBlinks = cache[stone]
+    if (cachedStoneBlinks != null) {
+        val increment = min(maxBlinkCount - currentBlinkCount, cachedStoneBlinks.lastIndex)
+        val cachedSum = cachedStoneBlinks[increment].sumOf {
+            countStonesCached(it, currentBlinkCount + increment, maxBlinkCount, cache)
+        }
+        return cachedSum
+    }
     if (currentBlinkCount == maxBlinkCount) {
         return 1
     }
