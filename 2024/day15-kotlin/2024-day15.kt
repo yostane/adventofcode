@@ -4,14 +4,15 @@
 //SOURCES 2024-day15-input.kt
 
 open class Robot(val map: Map, val moves: String) {
-    private val wall = '#'
-    private val box = 'O'
-    private val free = '.'
-    private val robot = '@'
-    var position: Vec2D
-    val directions = mapOf('>' to (0 to 1), '<' to (0 to -1), 'v' to (1 to 0), '^' to (-1 to 0))
+    protected val wall = '#'
+    protected val box = 'O'
+    protected val free = '.'
+    protected val robot = '@'
+    protected val shouldLog = false
+    protected var position: Vec2D
+    protected val directions = mapOf('>' to (0 to 1), '<' to (0 to -1), 'v' to (1 to 0), '^' to (-1 to 0))
 
-    fun findRobotInMap(): Vec2D {
+    protected fun findRobotInMap(): Vec2D {
         for (i in map.indices) {
             for (j in map[i].indices) {
                 if (map[i][j] == robot) {
@@ -22,17 +23,22 @@ open class Robot(val map: Map, val moves: String) {
         throw Error("Robot not found")
     }
 
+    private fun log(text: String) {
+        if (!shouldLog) return
+        println(text)
+    }
+
     init {
         position = findRobotInMap()
-        println("Robot found at $position")
+        log("Robot found at $position")
         doAllMoves()
     }
 
-    fun isWall(vec2D: Vec2D) = map[vec2D] == wall
-    fun isBox(vec2D: Vec2D) = map[vec2D] == box
-    fun isFreeSpace(vec2D: Vec2D) = map[vec2D] == free
+    protected fun isWall(vec2D: Vec2D) = map[vec2D] == wall
+    protected fun isBox(vec2D: Vec2D) = map[vec2D] == box
+    protected fun isFreeSpace(vec2D: Vec2D) = map[vec2D] == free
 
-    private fun move(direction: Vec2D): Boolean {
+    protected fun move(direction: Vec2D): Boolean {
         val nextPosition = direction + position
         if (isFreeSpace(nextPosition)) {
             map[position] = free
@@ -57,30 +63,34 @@ open class Robot(val map: Map, val moves: String) {
         throw Error("No wall or free space found. Position: $position, direction: $direction")
     }
 
-    fun doAllMoves() {
-        println(map.asString())
+    protected fun doAllMoves() {
+        log(map.asString())
         for (move in moves) {
             val direction = directions[move]
             require(direction != null)
             move(direction)
-            println("$position, moving with $direction from move $move")
-            println(map.asString())
+            log("$position, moving with $direction from move $move")
+            log(map.asString())
         }
     }
 
-    fun sumOfBoxGpsCoordinates(): Long {
+    protected fun sumOfBoxGpsCoordinates(): Long {
         var sum = 0L
         for (i in map.indices) {
             for (j in map[i].indices) {
                 if (isBox(i to j)) {
                     val coordinates = 100L * i + j
-                    println("($i,$j) -> $coordinates")
+                    log("($i,$j) -> $coordinates")
                     sum += coordinates
                 }
             }
         }
         return sum
     }
+}
+
+class WideAreRobot(map: Map, moves: String) : Robot(map, moves) {
+
 }
 
 fun run(input: String): Pair<Long, Long> {
