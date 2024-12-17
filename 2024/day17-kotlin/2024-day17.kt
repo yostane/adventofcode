@@ -7,7 +7,22 @@ import kotlin.math.pow
 
 typealias Instruction = Pair<Int, Int>
 
+typealias  CacheEntry = CachedComputer
+
+data class CachedComputer(var a: Long, var b: Long, var c: Long, val existingOutputs: List<Int>, val ip: Int)
+
 class Computer(var a: Long, var b: Long, var c: Long, val instructions: List<Int>, val maxOutputSize: Int?) {
+    companion object {
+        val cache = mutableMapOf<CacheEntry, List<Int>>()
+    }
+
+    val computersToCache = mutableListOf<CacheEntry>()
+    fun getCacheKey() = CachedComputer(a, b, c, outputs.toList(), ip)
+    fun updateCache() {
+        val output = outputs.toList()
+        computersToCache.forEach { cache[it] = output }
+    }
+
     var outputs = mutableListOf<Int>()
     var ip = 0
 
@@ -40,12 +55,21 @@ class Computer(var a: Long, var b: Long, var c: Long, val instructions: List<Int
 
     fun runProgram() {
         while (ip < instructions.lastIndex) {
+            val cacheKey = getCacheKey()
+            val cachedOutputs = cache[cacheKey]
+            if (cachedOutputs != null){
+                outputs = cachedOutputs.toMutableList()
+                return
+            }
+            computersToCache.add(cacheKey)
             runInstruction(instructions[ip], instructions[ip + 1])
             if (maxOutputSize != null && outputs.size > maxOutputSize) {
 //                outputs.clear()
+                updateCache()
                 return
             }
         }
+        updateCache()
     }
 
     fun getOutputAsString() = outputs.joinToString(",")
@@ -63,14 +87,14 @@ fun runProgram(input: String) {
 
     println("part1 $program, ${computer.getOutputAsString()}")
 
-    var x = 35_000_007_120_602L
+    var x = 35000008794712L
     var output = ""
     do {
         val c = Computer(x, b, c, instructions, instructions.size)
         c.runProgram()
         x += 1
         output = c.getOutputAsString()
-        println("$x - $output - ${c.outputs.size}")
+        print("$x - $output - ${c.outputs.size}. ")
     } while (output != program)
     val part2Result = x - 1
     println("part2 $part2Result")
