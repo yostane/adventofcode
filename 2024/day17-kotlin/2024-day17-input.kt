@@ -1,15 +1,19 @@
 // Put sample inputs here
 val sampleInputs = listOf(
     """
-        Register A: 729
+        Register A: 2024
         Register B: 0
         Register C: 0
 
-        Program: 0,1,5,4,3,0
+        Program: 0,3,5,4,3,0
     """.trimIndent(),
-    """
-        
-    """.trimIndent()
+//    """
+//        Register A: 729
+//        Register B: 0
+//        Register C: 0
+//
+//        Program: 0,1,5,4,3,0
+//    """.trimIndent(),
 )
 
 // Put the puzzle input here

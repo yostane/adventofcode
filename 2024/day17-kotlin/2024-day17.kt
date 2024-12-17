@@ -7,11 +7,11 @@ import kotlin.math.pow
 
 typealias Instruction = Pair<Int, Int>
 
-class Program(var a: Long, var b: Long, var c: Long, val instructions: List<Int>) {
+class Computer(var a: Long, var b: Long, var c: Long, val instructions: List<Int>, val maxOutputSize: Int?) {
     var outputs = mutableListOf<Int>()
     var ip = 0
 
-    fun getComboOperand(operand: Int) =
+    private fun getComboOperand(operand: Int) =
         when (operand) {
             in 0..3 -> operand.toLong()
             4 -> a
@@ -20,13 +20,13 @@ class Program(var a: Long, var b: Long, var c: Long, val instructions: List<Int>
             else -> throw Error("invalid combo operand")
         }
 
-    fun run(opcode: Int, operand: Int) {
+    private fun runInstruction(opcode: Int, operand: Int) {
         when (opcode) {
             0 -> a = a / 2.0.pow(getComboOperand(operand).toDouble()).toLong()
             1 -> b = b.xor(operand.toLong())
             2 -> b = getComboOperand(operand) % 8
-            3 -> {
-                if (a != 0L) ip = operand
+            3 -> if (a != 0L) {
+                ip = operand
                 return
             }
 
@@ -38,38 +38,50 @@ class Program(var a: Long, var b: Long, var c: Long, val instructions: List<Int>
         ip += 2
     }
 
-    fun run() {
+    fun runProgram() {
         while (ip < instructions.lastIndex) {
-            run(instructions[ip], instructions[ip + 1])
+            runInstruction(instructions[ip], instructions[ip + 1])
+            if (maxOutputSize != null && outputs.size > maxOutputSize) {
+//                outputs.clear()
+                return
+            }
         }
     }
+
+    fun getOutputAsString() = outputs.joinToString(",")
 }
 
-fun run(input: String) {
+fun runProgram(input: String) {
     val lines = input.lines()
-    val a = lines[0].substringAfter("Register A: ").toBigInteger()
-    val b = lines[1].substringAfter("Register B: ").toBigInteger()
-    val c = lines[2].substringAfter("Register C: ").toBigInteger()
-    val instructions = lines[4].split("""\d,\d""".toRegex())
-        .map {
-            val opcode = it.substringBefore(",").toUByte()
-            val operand = it.substringAfter(",").toUByte()
-            opcode to operand
-        }
-    val program = Program(a, b, c, instructions)
-    val part1Result = 0
-    println("part1 $part1Result")
+    val a = lines[0].substringAfter("Register A: ").toLong()
+    val b = lines[1].substringAfter("Register B: ").toLong()
+    val c = lines[2].substringAfter("Register C: ").toLong()
+    val program = lines[4].substringAfter("Program: ")
+    val instructions = program.split(",").map(String::toInt)
+    val computer = Computer(a, b, c, instructions, null)
+    computer.runProgram()
 
-    val part2Result = 0
+    println("part1 $program, ${computer.getOutputAsString()}")
+
+    var x = 6165750635680L
+    var output = ""
+    do {
+        val c = Computer(x, b, c, instructions, instructions.size)
+        c.runProgram()
+        x += 1
+        output = c.getOutputAsString()
+        println("$x - $output - ${c.outputs.size}")
+    } while (output != program)
+    val part2Result = x - 1
     println("part2 $part2Result")
 }
 
 fun main() {
-    println("Sample inputs")
-    sampleInputs.forEachIndexed { i, input ->
-        println("Sample input $i")
-        run(input)
-    }
+//    println("Sample inputs")
+//    sampleInputs.forEachIndexed { i, input ->
+//        println("Sample input $i")
+//        runProgram(input)
+//    }
     println("Puzzle input")
-    run(input)
+    runProgram(input)
 }
