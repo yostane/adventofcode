@@ -95,8 +95,6 @@ fun runProgram(input: String) {
     val computer = Computer(a, b, c, instructions, null)
     computer.runProgram()
 
-    var outputHashCode = 0
-
     println("part1 $program, ${computer.getOutputAsString()}")
     val hashCode = instructions.hashCode()
     var x = 35000017669400L
@@ -104,9 +102,8 @@ fun runProgram(input: String) {
         x += 1
         val c = Computer(x, b, c, instructions, instructions.size)
         c.runProgram()
-        val outputHashCode = c.outputHashCode
-        println("a: $x - hash: $outputHashCode. TargetHash: $hashCode")
-    } while (outputHashCode != hashCode)
+        //println("a: $x - hash: $outputHashCode. TargetHash: $hashCode")
+    } while (c.outputHashCode != hashCode)
     val part2Result = x
     println("part2 $part2Result")
 }
