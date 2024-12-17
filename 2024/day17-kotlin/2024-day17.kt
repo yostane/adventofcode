@@ -63,7 +63,7 @@ fun runProgram(input: String) {
 
     println("part1 $program, ${computer.getOutputAsString()}")
 
-    var x = 6165750635680L
+    var x = 6165808013955L
     var output = ""
     do {
         val c = Computer(x, b, c, instructions, instructions.size)
