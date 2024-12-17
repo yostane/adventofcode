@@ -7,24 +7,33 @@ import kotlin.math.pow
 
 typealias Instruction = Pair<Int, Int>
 
-typealias  CacheEntry = CachedComputer
+typealias  CacheEntry = Int
 
 data class CachedComputer(var a: Long, var b: Long, var c: Long, val existingOutputs: List<Int>, val ip: Int)
 
 class Computer(var a: Long, var b: Long, var c: Long, val instructions: List<Int>, val maxOutputSize: Int?) {
     companion object {
-        val cache = mutableMapOf<CacheEntry, List<Int>>()
+        val cache = mutableMapOf<CacheEntry, Int>()
     }
 
-    val computersToCache = mutableListOf<CacheEntry>()
-    fun getCacheKey() = CachedComputer(a, b, c, outputs.toList(), ip)
-    fun updateCache() {
-        val output = outputs.toList()
-        computersToCache.forEach { cache[it] = output }
-    }
+    var outputHashCode: Int? = null
 
     var outputs = mutableListOf<Int>()
     var ip = 0
+    val computersToCache = mutableListOf<CacheEntry>()
+    fun putAsideForCache(cacheKey: CacheEntry){
+        if (outputs.isNotEmpty()) return
+        computersToCache.add(cacheKey)
+    }
+    fun getCacheKey() = "$a,$b,$c,$ip,${outputs.hashCode()}".hashCode()
+
+    fun updateCache() {
+        val hash = outputs.hashCode()
+        if (outputHashCode == null){
+            outputHashCode = hash
+        }
+        computersToCache.forEach { cache[it] = hash }
+    }
 
     private fun getComboOperand(operand: Int) =
         when (operand) {
@@ -58,12 +67,13 @@ class Computer(var a: Long, var b: Long, var c: Long, val instructions: List<Int
             val cacheKey = getCacheKey()
             val cachedOutputs = cache[cacheKey]
             if (cachedOutputs != null){
-                outputs = cachedOutputs.toMutableList()
+                outputHashCode = cachedOutputs
+                updateCache()
                 return
             }
-            computersToCache.add(cacheKey)
+            putAsideForCache(cacheKey)
             runInstruction(instructions[ip], instructions[ip + 1])
-            if (maxOutputSize != null && outputs.size > maxOutputSize) {
+            if (maxOutputSize != null && outputs.size > maxOutputSize + 2) {
 //                outputs.clear()
                 updateCache()
                 return
@@ -85,18 +95,19 @@ fun runProgram(input: String) {
     val computer = Computer(a, b, c, instructions, null)
     computer.runProgram()
 
-    println("part1 $program, ${computer.getOutputAsString()}")
+    var outputHashCode = 0
 
-    var x = 35000008794712L
-    var output = ""
+    println("part1 $program, ${computer.getOutputAsString()}")
+    val hashCode = instructions.hashCode()
+    var x = 35000017669400L
     do {
+        x += 1
         val c = Computer(x, b, c, instructions, instructions.size)
         c.runProgram()
-        x += 1
-        output = c.getOutputAsString()
-        print("$x - $output - ${c.outputs.size}. ")
-    } while (output != program)
-    val part2Result = x - 1
+        val outputHashCode = c.outputHashCode
+        println("a: $x - hash: $outputHashCode. TargetHash: $hashCode")
+    } while (outputHashCode != hashCode)
+    val part2Result = x
     println("part2 $part2Result")
 }
 
