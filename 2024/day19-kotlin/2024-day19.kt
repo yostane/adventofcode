@@ -3,10 +3,15 @@
 //KOTLIN 2.1.0
 //SOURCES 2024-day19-input.kt
 
-fun countPossibleMatches(design: String, patterns: List<String>): Int {
-    if (design.isEmpty()) return 1
-    return patterns.filter { design.startsWith(it) }.map { design.substring(0, it.length) }
-        .sumOf { countPossibleMatches(it, patterns) }
+
+fun countPossibleMatches(design: String, patterns: List<String>, cache: MutableMap<String, Long>): Long {
+    val cached = cache[design]
+    if (cached != null) return cached
+    val result = patterns.filter { design.startsWith(it) }.sumOf {
+        if (design == it) 1 else countPossibleMatches(design.substring(it.length), patterns, cache)
+    }
+    cache[design] = result
+    return result
 }
 
 fun run(input: String) {
@@ -16,7 +21,7 @@ fun run(input: String) {
     val part1Result = towelPart.lineSequence().count { patternRegex matches it }
     println("part1 $part1Result")
 
-    val part2Result = 0
+    val part2Result = towelPart.lineSequence().sumOf { countPossibleMatches(it, patterns, mutableMapOf()) }
     println("part2 $part2Result")
 }
 
