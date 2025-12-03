@@ -19,24 +19,39 @@ operator fun Vec2D.unaryMinus() =
 fun Vec2D.isInBox(lineCount: Int, columnCount: Int) =
     this.first in 0..<lineCount && this.second in 0..<columnCount
 
+fun SubRegionMap.getOrFalse(line: Int, column: Int): Boolean {
+    if (line !in this.indices || column !in this[line].indices) {
+        return false
+    }
+    return this[line][column]
+}
+
+fun SubRegionMap.getOrFalse(v: Vec2D) = getOrFalse(v.first, v.second)
+
+
 class Region(val topLeft: Vec2D, val map: SubRegionMap, val regionName: Char) {
     val lineCount = map.size
     val columnCount = map[0].size
     val area: Int
     val perimeter: Int
     val price: Int
+    val sidesCount: Int
+    val sidesPrice: Int
 
     init {
         val ap = getAreaAndPerimeter()
         area = ap.first
         perimeter = ap.second
+        sidesCount = ap.third
         price = area * perimeter
+        sidesPrice = sidesCount * area
     }
 
 
-    private fun getAreaAndPerimeter(): Pair<Int, Int> {
+    private fun getAreaAndPerimeter(): Triple<Int, Int, Int> {
         var perimeter = 0
         var area = 0
+        var sidesCount = 0
         for (i in map.indices) {
             for (j in map[i].indices) {
                 if (map[i][j] == false) {
@@ -47,9 +62,25 @@ class Region(val topLeft: Vec2D, val map: SubRegionMap, val regionName: Char) {
                 }
                 perimeter += 4 - neighbours
                 area += 1
+                // left side (when below is false or below left is true
+                if (!map.getOrFalse(i, j - 1) && (!map.getOrFalse(i + 1, j) || map.getOrFalse(i + 1, j - 1))) {
+                    sidesCount += 1
+                }
+                // right side (when below is false or bottom right is true)
+                if (!map.getOrFalse(i, j + 1) && (!map.getOrFalse(i + 1, j) || map.getOrFalse(i + 1, j + 1))) {
+                    sidesCount += 1
+                }
+                // top side (when right is false or top right is true)
+                if (!map.getOrFalse(i - 1, j) && (!map.getOrFalse(i, j + 1) || map.getOrFalse(i - 1, j + 1))) {
+                    sidesCount += 1
+                }
+                // bottom side false and (right is false or bottom right is true)
+                if (!map.getOrFalse(i + 1, j) && (!map.getOrFalse(i, j + 1) || map.getOrFalse(i + 1, j + 1))) {
+                    sidesCount += 1
+                }
             }
         }
-        return area to perimeter
+        return Triple(area, perimeter, sidesCount)
     }
 
     override fun toString() =
@@ -108,7 +139,7 @@ fun run(input: String) {
     val part1Result = regions.sumOf { it.price }
     println("part1 $part1Result")
 
-    val part2Result = 0
+    val part2Result = regions.sumOf { it.sidesPrice }
     println("part2 $part2Result")
 }
 
