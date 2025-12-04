@@ -1,9 +1,9 @@
-import kotlin.math.abs
-
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 
 //KOTLIN 2.2.21
 //SOURCES 2025-day1-input.kt
+
+import kotlin.math.abs
 
 data class Rotation(val direction: Char, val value: Int)
 
@@ -35,20 +35,14 @@ fun runPart2(input: String): Int {
     var zeroCount = 0
     for (tickCount in tickCounts) {
         val originalPosition = currentPosition
-        currentPosition = (currentPosition + tickCount)
-        if (currentPosition > 0) {
-            zeroCount += currentPosition / 100
-        } else if (currentPosition < 0) {
-            zeroCount += abs(currentPosition) / 100
+        currentPosition += tickCount
+        zeroCount += if (currentPosition == 0) 1 else abs(currentPosition / 100)
+        currentPosition %= 100
+        if (currentPosition < 0) {
+            currentPosition += 100
+            zeroCount += if (originalPosition != 0) 1 else 0
         }
-
-        while (!(currentPosition in 0..99)) {
-            val factor = if (currentPosition < 0) 1 else -1
-            // println("Found overflow ${currentPosition}")
-            currentPosition += factor * 100
-        }
-        zeroCount += if (currentPosition == 0) 1 else 0
-        // println("Current pos ${currentPosition}. Zerocount ${zeroCount}")
+        print("[o=${originalPosition}, t=${tickCount}, c=${currentPosition}, z=$zeroCount] ")
     }
     return zeroCount
 }
