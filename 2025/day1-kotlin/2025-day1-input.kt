@@ -1,6 +1,9 @@
 // Put sample inputs here
 val sampleInputs = listOf(
     "R1000",
+    "R250",
+    "L250",
+    "L50",
     """
     L68
     L30
@@ -12,10 +15,30 @@ val sampleInputs = listOf(
     L99
     R14
     L82
+    """.trimIndent(),
+    """
+    R1000
+    L1000
+    L50
+    R1
+    L1
+    L1
+    R1
+    R100
+    R1
+    """.trimIndent(),
+    """
+        L50
+        R50
+        L50
+        L50
+        R50
+        L50
+        R50
+        R50
     """.trimIndent()
 )
 
-// Put the puzzle input here
 val input = """
 R29
 L3

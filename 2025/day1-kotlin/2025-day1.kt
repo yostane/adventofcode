@@ -38,6 +38,7 @@ fun runPart2(input: String): Int {
         currentPosition += tickCount
         zeroCount += if (currentPosition == 0) 1 else abs(currentPosition / 100)
         currentPosition %= 100
+        zeroCount += if (tickCount <= -100 && currentPosition == 0 && originalPosition != 0) 1 else 0
         if (currentPosition < 0) {
             currentPosition += 100
             zeroCount += if (originalPosition != 0) 1 else 0
