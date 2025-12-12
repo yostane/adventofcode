@@ -41,7 +41,7 @@ long runPart2(string input)
     var lines = input.Split('\n');
     return lines.Sum(line =>
     {
-        long bankMax = Enumerable.Range(0, line.Length - 12).Max(i => getMax12digJolts(line, i));
+        long bankMax = getMax12digJolts(line, 0);
         return bankMax;
     });
 }
